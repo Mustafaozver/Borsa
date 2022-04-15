@@ -1,0 +1,100 @@
+<html>
+<head>
+<script src="Borsa.js"></script>
+<script>
+
+var Walker = {};
+Walker.wallet = null;
+Walker.setup = function() {
+	// Para birimleri
+	new Money("TRL");
+	new Money("USD");
+	new Money("BTC");
+	new Money("EUR");
+	// Cüzdan ve hesap ayrıntıları
+	this.wallet = new Wallet();
+	this.wallet.buy(1000,"TRL");
+	this.wallet.buy(0,"USD");
+	this.wallet.buy(0,"EUR");
+	this.wallet.buy(0,"BTC");
+	____(6987);
+	Wallet.Moneys["TRL"]._paritymult = 5;
+	Wallet.Moneys["USD"]._paritymult = Wallet.Moneys["USD"].parity**(-1.1);
+	Wallet.Moneys["EUR"]._paritymult = Wallet.Moneys["EUR"].parity**(-1.1);
+	Wallet.Moneys["BTC"]._paritymult = Wallet.Moneys["BTC"].parity**(-1.5);
+	Wallet.Moneys["USD"]._pwparity = 0.9;
+	Wallet.Moneys["EUR"]._pwparity = 0.9;
+	Wallet.Moneys["BTC"]._pwparity = 1/2;
+	// devriye
+	this.Cycle();
+};
+Walker.Cycle_TIME = 500;
+Walker.Cycle_FUNCS = [];
+Walker.Cycle = function() {
+	for (var i=0;i<this.Cycle_FUNCS.length;i++) this.Cycle_FUNCS[i]();
+	setTimeout("Walker.Cycle();",this.Cycle_TIME);
+};
+Walker.rateParity = function(par) {
+	if (!Wallet.Moneys[par]) return 0;
+	var numberParity = 0;
+	for (var key in Wallet.Moneys) numberParity++;
+	if (numberParity <= 1) return 1;
+	var totalParity = Wallet.getTotalParity(0);
+	var perParity = (Wallet.Moneys[par].parity**Wallet.Moneys[par]._pwparity)*Wallet.Moneys[par]._paritymult + Wallet.Moneys[par]._epparity;// - (Wallet.Moneys[par].parity - Wallet.Moneys[par]._exparity);
+	return (totalParity - perParity)/totalParity/(numberParity-1);
+};
+
+
+//////////////////////////////////////////////////////////
+
+Walker.Cycle_FUNCS.push(function() {
+	var totalAssets = Walker.wallet.getVpF();
+	var new_assets = {};
+	for (var key in Wallet.Moneys) new_assets[key] = Walker.rateParity(key)*totalAssets/Wallet.Moneys[key].parity;
+	for (var key in new_assets) {
+		var diff = (new_assets[key] - Walker.wallet._[key].value);
+		//diff = Math.abs(diff)-
+		Walker.wallet._[key].value += diff;
+	}
+});
+
+Walker.Cycle_FUNCS.push(function() {
+	for (var key in Wallet.Moneys) {
+		if (key == "TRL") continue;
+		Wallet.Moneys[key].setParity(getPARITY(key));
+	}
+	console.log("USD/TRL="+(getPARITY("USD")/getPARITY("TRL"))+" , EUR/TRL="+(getPARITY("EUR")/getPARITY("TRL"))
+	+"\nVARLIK = " + Walker.wallet.toString()
+	+"\nVARLIK (TRL) = " + Walker.wallet.getVpF("TRL")
+	+"\nVARLIK (USD) = " + Walker.wallet.getVpF("USD"));
+});
+
+function getPARITY(key) {
+	var value = 0;
+	if (Wallet.Moneys[key]) var value = Wallet.Moneys[key].parity /*+ Wallet.Moneys[key]._epparity*/;
+	return value;
+}
+
+var _____={};
+function graph(typ,arr) {
+ _____[typ] = arr;
+}
+
+var bbob = 6987 - 1535;
+function ____(i) {
+ if (i > 6987 && _____["BTCUSD"].length > i+1-bbob) _____["L"] = [i,setTimeout("____("+(1+i)+")",Walker.Cycle_TIME*1)];
+ if (_____["USDTRL"][i][1]) Wallet.Moneys["USD"].setParity(_____["USDTRL"][i][1],"TRL");
+ if (_____["EURTRL"][i][1]) Wallet.Moneys["EUR"].setParity(_____["EURTRL"][i][1],"TRL");
+ if (_____["BTCUSD"][i-bbob][1]) Wallet.Moneys["BTC"].setParity(_____["BTCUSD"][i-bbob][1],"USD");
+}
+
+</script>
+
+<script src="dsets/eurtrl.js"></script>
+<script src="dsets/usdtry.js"></script>
+<script src="dsets/btcusd.js"></script>
+</head>
+<body>
+ 
+</body>
+</html>

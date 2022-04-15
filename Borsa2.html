@@ -1,0 +1,82 @@
+<html>
+<head>
+<script src="Borsa.js"></script>
+<script>
+
+var Walker = {};
+Walker.wallet = null;
+Walker.setup = function() {
+	// Para birimleri
+	new Money("TRL");
+	new Money("USD", 5.7);
+	new Money("EUR", 6.3);
+	// Cüzdan ve hesap ayrıntıları
+	this.wallet = new Wallet();
+	this.wallet.buy(1000,"TRL");
+	this.wallet.buy(1000,"USD");
+	this.wallet.buy(1000,"EUR");
+	____(6987);
+	// devriye
+	this.Cycle();
+};
+Walker.Cycle_TIME = 500;
+Walker.Cycle_FUNCS = [];
+Walker.Cycle = function() {
+	for (var i=0;i<this.Cycle_FUNCS.length;i++) this.Cycle_FUNCS[i]();
+	setTimeout("Walker.Cycle();",this.Cycle_TIME);
+};
+Walker.rateParity = function(par) {
+	if (!Wallet.Moneys[par]) return 0;
+	var numberParity = 0;
+	for (var key in Wallet.Moneys) numberParity++;
+	if (numberParity <= 1) return 1;
+	var totalParity = Wallet.getTotalParity();
+	return (totalParity - Wallet.Moneys[par].parity)/totalParity/(numberParity-1);
+};
+
+
+//////////////////////////////////////////////////////////
+
+Walker.Cycle_FUNCS.push(function() {
+	var totalAssets = Walker.wallet.getVpF();
+	var new_assets = {};
+	for (var key in Wallet.Moneys) new_assets[key] = Walker.rateParity(key)*totalAssets/Wallet.Moneys[key].parity;
+	for (var key in new_assets) {
+		var diff = (new_assets[key] - Walker.wallet._[key].value);
+		Walker.wallet._[key].value += diff;
+	}
+});
+
+Walker.Cycle_FUNCS.push(function() {
+	for (var key in Wallet.Moneys) {
+		if (key == "TRL") continue;
+		Wallet.Moneys[key].setParity(getPARITY(key));
+	}
+	console.log("USD/TRL="+(getPARITY("USD")/getPARITY("TRL"))+" , EUR/TRL="+(getPARITY("EUR")/getPARITY("TRL"))
+	+"\nVARLIK (TRL) = " + Walker.wallet.getVpF("TRL")
+	+"\nVARLIK (USD) = " + Walker.wallet.getVpF("USD"));
+});
+
+function getPARITY(key) {
+	var value = Wallet.Moneys[key].parity;
+	return value;
+}
+
+var _____={};
+function graph(typ,arr) {
+ _____[typ] = arr;
+}
+
+function ____(i) {
+ if (i > 6987 && _____["USDTRL"].length > i+1) _____["L"] = [i,setTimeout("____("+(1+i)+")",Walker.Cycle_TIME*1)];
+ Wallet.Moneys["USD"].parity = _____["USDTRL"][i][1];
+ Wallet.Moneys["EUR"].parity = _____["EURTRL"][i][1];
+}
+
+</script>
+
+</head>
+<body>
+ 
+</body>
+</html>
